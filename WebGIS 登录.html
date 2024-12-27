@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>河南理工大学旅游服务信息平台</title>
+
+    <link rel="stylesheet" href="./css/styles.css" />
+    <!-- <script src="./js/script.js"></script> -->
+
+    <!-- 按钮样式 -->
+    <style>
+        .button-wrapper {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            justify-items: center;
+            gap: 10px;
+        }
+        a.btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color:  #8d9cc798;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            margin-right: 10px;
+
+        }
+
+        a.btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 设置按钮 -->
+    <div class="button-wrapper">
+        <a href="https://www.hpu.edu.cn/xxgk/xxjj.htm" class="btn">学校简介</a>
+        <a href="https://www.hpu.edu.cn/xxgk/lsyg.htm" class="btn">历史沿革</a>
+        <a href="https://article.xuexi.cn/articles/index.html?art_id=4178666289540105519&item_id=4178666289540105519&study_style_id=video_default&t=1623121232081&showmenu=false&ref_read_id=655d5ca6-32d5-4bf2-9b8e-682e" class="btn">宣传片</a>
+        <a href="https://www.hpu.edu.cn/xysz.htm" class="btn">学院设置</a>
+        <a href="https://xyh.hpu.edu.cn/" class="btn">校友会</a>
+    </div>
+
+    <div class="login-container">
+
+        <!-- 这里是 logo 图片 -->
+        <img src="https://tse1-mm.cn.bing.net/th/id/OIP-C.vyRpdxECoUCNC8LXXHW6kQHaHa?rs=1&pid=ImgDetMain" 
+        alt="WebGIS 标志" class="login-logo">
+
+        <h2>河南理工大学旅游服务信息平台 登录</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username">用户名:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密码:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">登录</button>
+        </form>
+        <p id="error-message"></p>
+    </div>
+    <script src="./js/script.js"></script>
+</body>
+
+</html>
