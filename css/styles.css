@@ -1,0 +1,78 @@
+.login-container {
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 0;
+    transform: translateY(150px); /* 同样，可按需调整数值 */
+    /* background-color: #f9f9f9; */
+    background-color: rgb(250, 247, 247); 
+    /* background-image: url('https://ts1.cn.mm.bing.net/th/id/R-C.b3581de7a4868728d7a588a70c11333b?rik=3UZfReLSg60eMA&riu=http%3a%2f%2fjzys.hpu.edu.cn%2f__local%2fB%2f35%2f81%2fDE7A4868728D7A588A70C11333B_9583DA80_49218.jpg%3fe%3d.jpg&ehk=WdGuSQhPrbfyrtqkTwYd0ZGv2uf03FaoCsrFBVEY0fQ%3d&risl=&pid=ImgRaw&r=0');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; */
+}
+
+h2 {
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    width: 250px; /* 设置长度，可根据需求调整该值 */
+    margin: 10px auto; /* 水平居中，上下外边距为0，左右外边距自动分配 */
+    width: 93%;
+    display: inline-block;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#error-message {
+    color: red;
+    text-align: center;
+}
+
+.login-logo {
+    display: block;
+    margin: 0 auto 20px;
+    width: 150px;
+    height: auto;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-image: url("..//河南理工大学bjt1.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment:fixed;
+}
+

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>河南理工大学校园旅游服务平台</title>
+     <!--引入资源-->
+    <!--引入css相关内容-->
+    <!-- 使用了高德提供的样式 -->
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <link rel="stylesheet" href="//a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <link rel="stylesheet" href="./css/index.css" />
+    <!-- 引入js相关的资源 -->
+    <script type="text/javascript">
+        window._AMapSecurityConfig = {
+            securityJsCode:'21834b67eaa56af6c77e0fe75c8caa0c',
+        }
+</script>
+    <script 
+        type="text/javascript"
+        src="https://webapi.amap.com/maps?v=2.0&key=57a5615713d1bfa88019ed1abfc2f111&plugin=AMap.GeoJSON"
+    ></script>
+    <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+    <script src="./js/store.js"></script>
+</head>
+<body>
+    <!-- 创建地图容器 -->
+    <div id="container"></div>
+    <div class="info">点击地图标注热门地点</div>
+    <div class="input-card" style="width: auto">
+        <h4>推荐浏览路线</h4>
+        <div class="input-item">
+            <button class="btn" onclick="startAnimation()">开始动画</button>
+        </div>
+    </div>
+    <div id="panel"></div>
+
+    <script>
+        // 创建地图对象
+        var map= new AMap.Map('container',{
+            center: [113.263526,35.18359],
+            zoom: 16,
+            viewMode: '3D',
+            pitch: 45,
+        })
+
+        // 使用控件
+        AMap.plugin(['AMap.ToolBar', 'AMap.Scale', 'AMap.ControlBar'],function(){
+            map.addControl(new AMap.ToolBar({
+                position:{
+                    top:'80px',
+                    right:'40px',
+                },
+            }))
+            map.addControl(new AMap.Scale())
+            map.addControl(new AMap.ControlBar())
+        })
+
+        // 定义一个全局变量，保存geojson
+        var geojson = new AMap.GeoJSON({
+            geoJSON: null,
+
+        })
+
+        // 导入数据
+        if(JSON.stringify(getData()) != '[]'){
+            geojson.importData(getData())
+            //恢复旧数据的点击事件
+            geojson.eachOverlay(function (item){
+                item.on('click',function(e){
+                    // console.log(e.lnglat,'旧的数据点击了')
+                    var ext = item.getExtData()
+                    var click = ++ext._geoJsonProperties.click
+                    console.log('点击了'+click+'次')
+
+                //使用信息提示框
+                var infowindow = new AMap.InfoWindow({
+                    anchor: 'top-center',
+                    content:`<div>打卡了${click}次</div>`,
+                })
+
+                //显示（打开信息窗口）
+                infowindow.open(map,item.getPosition())
+
+                    saveData(geojson.toGeoJSON())
+                })
+            })
+        }
+        
+        map.add(geojson)
+
+        // console.log(geojson)
+
+        // 监听地图点击事件
+        map.on('click', function(e){
+            var marker = new AMap.Marker({
+                position: e.lnglat,
+                extData:{
+                    _geoJsonProperties:{
+                        gid:geojson.getOverlays().length + 1,
+                        click: 0,
+                    },
+                },
+            })
+
+            //使用覆盖物的点击事件
+            marker.on('click',function(e){
+                // console.log(e.lnglat,'点击了')
+                //marker对象的click属性加1
+                var ext = marker.getExtData()
+                var click = ++ext._geoJsonProperties.click
+                console.log('点击了'+click+'次')
+
+                //使用信息提示框
+                var infowindow = new AMap.InfoWindow({
+                    anchor: 'top-center',
+                    content:`<div>打卡了${click}次</div>`,
+                })
+
+                //显示（打开信息窗口）
+                infowindow.open(map,marker.getPosition())
+
+                saveData(geojson.toGeoJSON())
+            })
+
+            //通过geojson对象管理覆盖物，显示点
+            geojson.addOverlay(marker)
+            // console.log(geojson)
+            // 保存数据（将geojson对象转换成标准的GeoJSON格式对象）
+            saveData(geojson.toGeoJSON())
+        })
+
+        function startAnimation(){
+            //console.log('开始动画')
+            //实现路径规划(导航)
+            AMap.plugin('AMap.Driving',function(){
+                var driving = new AMap.Driving({
+                    map: map,
+                     panel: "panel",
+                    //驾车策略
+                    policy: AMap.DrivingPolicy.LEAST_TIME,
+                })
+                // 设置起点和终点          
+                var start = new AMap.LngLat(113.278667, 35.192826)//客运站
+                var end = new AMap.LngLat(113.263774, 35.183781)//南门
+
+                //通过geojson得到每一个点的坐标
+
+                var opts = {
+                    waypoints: [],
+                }
+
+                geojson.eachOverlay(function (item){
+                    opts.waypoints.push(item.getPosition())
+                })
+
+                driving.search(start,end,opts,function(status,result){
+                    if(status == 'complete'){
+                        log.success('绘制驾车路线完成')
+
+                        //实现路径规划的动画效果，轨迹模拟
+                        // driving.setFitView()
+                        var marker = new AMap.Marker({
+                            map: map,
+                            position: start,
+                            icon: "https://webapi.amap.com/images/car.png",
+                            offset: new AMap.Pixel(-26, -13),
+                            autoRotation: true,
+                        })
+                    }   else{
+                        log.error('获取驾车数据失败：' + result)
+                    }
+                })
+
+            })
+        }
+
+    </script> 
+</body>
+</html>
