@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <style>
+        html,
+        body,
+        #container {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <title>椭圆的绘制和编辑</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <script src="https://webapi.amap.com/maps?v=2.0&key=57a5615713d1bfa88019ed1abfc2f111&plugin=AMap.MouseTool"></script>
+    <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+</head>
+<body>
+<div id="container"></div>
+<div class="input-card" style="width: 200px">
+    <h4 style="margin-bottom: 10px; font-weight: 600">利用mouseTool绘制覆盖物</h4>
+    <button class="btn" onclick="drawPolyline()" style="margin-bottom: 5px">绘制线段</button>
+    <button class="btn" onclick="drawPolygon()" style="margin-bottom: 5px">绘制多边形</button>
+    <button class="btn" onclick="drawRectangle()" style="margin-bottom: 5px">绘制矩形</button>
+    <button class="btn" onclick="drawCircle()" style="margin-bottom: 5px">绘制圆形</button>
+    <button class="btn" onclick="saveOverlaysAsJS()">保存为JS文件</button>
+</div>
+<script type="text/javascript">
+    var map = new AMap.Map("container", {
+        center: [113.263526, 35.18359],
+        zoom: 14
+    });
+
+    var mouseTool = new AMap.MouseTool(map);
+    var overlays = []; // 存储所有覆盖物及其描述
+
+    function drawPolyline () {
+        mouseTool.polyline({
+            strokeColor: "#3366FF",
+            strokeOpacity: 1,
+            strokeWeight: 6,
+            strokeStyle: "solid",
+        });
+    }
+
+    function drawPolygon () {
+        mouseTool.polygon({
+            strokeColor: "#FF33FF",
+            strokeOpacity: 1,
+            strokeWeight: 6,
+            strokeOpacity: 0.2,
+            fillColor: '#1791fc',
+            fillOpacity: 0.4,
+            strokeStyle: "solid",
+        });
+    }
+
+    function drawRectangle () {
+        mouseTool.rectangle({
+            strokeColor:'red',
+            strokeOpacity:0.5,
+            strokeWeight: 6,
+            fillColor:'blue',
+            fillOpacity:0.5,
+            strokeStyle: 'solid',
+        });
+    }
+
+    function drawCircle () {
+        mouseTool.circle({
+            strokeColor: "#FF33FF",
+            strokeOpacity: 1,
+            strokeWeight: 6,
+            strokeOpacity: 0.2,
+            fillColor: '#1791fc',
+            fillOpacity: 0.4,
+            strokeStyle: 'solid',
+        });
+    }
+
+    mouseTool.on('draw', function(event) {
+        var overlay = event.obj;
+        overlay.setMap(map); // 将绘制的覆盖物添加到地图上
+        overlays.push({overlay: overlay, description: prompt("请输入覆盖物的描述:")}); // 将绘制的覆盖物及其描述添加到数组中
+    });
+
+    function saveOverlaysAsJS() {
+        var jsContent = 'var overlaysData = [\n';
+
+        overlays.forEach(function(item, index) {
+            var overlayData;
+            var type = item.overlay instanceof AMap.Polygon ? 'polygon' :
+                item.overlay instanceof AMap.Polyline ? 'polyline' :
+                    item.overlay instanceof AMap.Rectangle ? 'rectangle' :
+                        item.overlay instanceof AMap.Circle ? 'circle' : '';
+
+            if (type) {
+                overlayData = {
+                    type: type,
+                    path: item.overlay.getPath() ? item.overlay.getPath().toString() : (item.overlay.getBounds() ? item.overlay.getBounds().toString() : item.overlay.getCenter().toString()),
+                    description: item.description
+                };
+                jsContent += 'new {type: "' + type + '", path: ' + JSON.stringify(overlayData.path) + ', description: "' + overlayData.description.replace(/"/g, '\\"') + '"}' + (index < overlays.length - 1 ? ',\n' : '');
+            }
+        });
+
+        jsContent = jsContent + '\n];\n';
+
+        // 创建Blob对象并生成下载链接
+        var blob = new Blob([jsContent], {type: "application/javascript;charset=utf-8"});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'overlays.js';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+</script>
+</body>
+</html>
